@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识卡片 - 儿童识字小报生成器</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components/generator.css">
+    <link rel="stylesheet" href="css/components/history.css">
+    <link rel="stylesheet" href="css/components/card.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">知识卡片</h1>
+            <nav class="nav">
+                <a href="#home" class="nav-link active" data-page="home">首页</a>
+                <a href="#generator" class="nav-link" data-page="generator">生成卡片</a>
+                <a href="#history" class="nav-link" data-page="history">历史记录</a>
+                <a href="#" class="nav-link" onclick="showApiKeyModal()">API配置</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- 首页 -->
+        <section id="home-page" class="page active">
+            <div class="container">
+                <div class="hero">
+                    <h2>儿童识字小报生成器</h2>
+                    <p>使用AI技术，为您的孩子生成个性化的识字学习卡片</p>
+                    <button class="btn btn-primary" onclick="navigateTo('generator')">
+                        开始生成
+                    </button>
+                </div>
+
+                <div class="features">
+                    <div class="feature-card">
+                        <h3>智能分级</h3>
+                        <p>根据小学到初中不同年级，自动匹配适合的词汇难度</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>多语言标注</h3>
+                        <p>支持拼音、英文单词或两者同时显示的灵活标注方式</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>丰富主题</h3>
+                        <p>涵盖超市、医院、学校、公园等多个生活场景主题</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 生成页面 -->
+        <section id="generator-page" class="page">
+            <div class="container">
+                <h2>生成识字卡片</h2>
+
+                <form id="generator-form" class="generator-form">
+                    <!-- 学习阶段选择 -->
+                    <div class="form-group">
+                        <label class="form-label">学习阶段</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="stage" value="primary" checked>
+                                <span>小学</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="stage" value="middle">
+                                <span>初中</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 年级选择 -->
+                    <div class="form-group">
+                        <label for="grade" class="form-label">年级</label>
+                        <select id="grade" class="form-select" required>
+                            <option value="">请选择年级</option>
+                        </select>
+                    </div>
+
+                    <!-- 主题选择 -->
+                    <div class="form-group">
+                        <label for="topic" class="form-label">主题/场景</label>
+                        <select id="topic" class="form-select" required>
+                            <option value="">请选择主题</option>
+                            <option value="超市">超市</option>
+                            <option value="医院">医院</option>
+                            <option value="公园">公园</option>
+                            <option value="学校">学校</option>
+                            <option value="家庭">家庭</option>
+                            <option value="动物园">动物园</option>
+                            <option value="交通">交通</option>
+                            <option value="custom">自定义</option>
+                        </select>
+                    </div>
+
+                    <!-- 自定义主题输入 -->
+                    <div class="form-group" id="custom-topic-group" style="display: none;">
+                        <label for="custom-topic" class="form-label">自定义主题</label>
+                        <input type="text" id="custom-topic" class="form-input" placeholder="请输入自定义主题（如：图书馆、博物馆等）" maxlength="20">
+                        <small class="form-hint">最多20个字符</small>
+                    </div>
+
+                    <!-- 标题输入 -->
+                    <div class="form-group">
+                        <label for="title" class="form-label">卡片标题</label>
+                        <input type="text" id="title" class="form-input"
+                               placeholder="如：快乐超市、我的学校" required>
+                    </div>
+
+                    <!-- 标注格式选择 -->
+                    <div class="form-group">
+                        <label class="form-label">标注格式</label>
+                        <div class="radio-group">
+                            <label class="radio-item">
+                                <input type="radio" name="labelFormat" value="pinyin" checked>
+                                <span>拼音 + 汉字</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="labelFormat" value="english">
+                                <span>英文 + 汉字</span>
+                            </label>
+                            <label class="radio-item">
+                                <input type="radio" name="labelFormat" value="both">
+                                <span>拼音 + 英文 + 汉字</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 生成参数 -->
+                    <div class="form-group">
+                        <label for="aspectRatio" class="form-label">图片比例</label>
+                        <select id="aspectRatio" class="form-select">
+                            <option value="3:4" selected>3:4 (竖版)</option>
+                            <option value="9:16">9:16 (手机竖版)</option>
+                            <option value="1:1">1:1 (正方形)</option>
+                            <option value="4:3">4:3 (横版)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="resolution" class="form-label">分辨率</label>
+                        <select id="resolution" class="form-select">
+                            <option value="1K" selected>1K (标准)</option>
+                            <option value="2K">2K (高清)</option>
+                            <option value="4K">4K (超高清)</option>
+                        </select>
+                    </div>
+
+                    <!-- 生成按钮 -->
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <span class="btn-text">生成卡片</span>
+                        <span class="btn-loading" style="display: none;">生成中...</span>
+                    </button>
+                </form>
+
+                <!-- 生成状态显示 -->
+                <div id="generation-status" class="generation-status" style="display: none;">
+                    <div class="status-content">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p class="status-text">正在生成卡片，请稍候...</p>
+                        <button class="btn btn-secondary" onclick="cancelGeneration()">取消生成</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 历史记录页面 -->
+        <section id="history-page" class="page">
+            <div class="container">
+                <h2>历史记录</h2>
+
+                <!-- 搜索和过滤 -->
+                <div class="history-controls">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="form-input"
+                               placeholder="搜索卡片标题或主题...">
+                        <button class="btn btn-icon" onclick="searchCards()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <button class="btn btn-secondary" onclick="clearHistory()">清空历史</button>
+                </div>
+
+                <!-- 卡片网格 -->
+                <div id="card-grid" class="card-grid">
+                    <!-- 卡片将通过JavaScript动态添加 -->
+                </div>
+
+                <!-- 空状态 -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <p>暂无历史记录</p>
+                    <button class="btn btn-primary" onclick="navigateTo('generator')">
+                        开始生成第一张卡片
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 卡片预览模态框 -->
+    <div id="card-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeCardModal()">&times;</button>
+            <div class="modal-body">
+                <img id="modal-image" src="" alt="识字卡片">
+                <div class="modal-info">
+                    <h3 id="modal-title"></h3>
+                    <p id="modal-meta"></p>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="downloadCard()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    下载图片
+                </button>
+                <button class="btn btn-secondary" onclick="shareCard()">分享</button>
+                <button class="btn btn-danger" onclick="deleteCard()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- API密钥配置模态框 -->
+    <div id="apikey-modal" class="modal" style="display: none;">
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="closeApiKeyModal()">&times;</button>
+            <div class="modal-body">
+                <h3>API密钥配置</h3>
+                <p>请输入您的Nano Banana Pro API密钥</p>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                    您可以从 <a href="https://kie.ai/api-key" target="_blank">https://kie.ai/api-key</a> 获取API密钥
+                </p>
+                <div class="form-group">
+                    <label for="api-key-input">API密钥:</label>
+                    <input type="password" id="api-key-input" class="form-input" placeholder="请输入您的API密钥">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+                    <button class="btn btn-secondary" onclick="clearApiKey()">清除密钥</button>
+                    <button class="btn btn-primary" onclick="saveApiKey()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载脚本 -->
+    <script src="script-safe.js"></script>
+</body>
+</html>
